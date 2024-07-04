@@ -224,11 +224,17 @@ class ConnectReply:
             raise ReplyError('Malformed connect reply')
 
         if addr_type == AddressType.IPV4:
+            if len(data) != 10:
+                raise ReplyError(f'LOL WUT?: {data}')
             bnd_host = socket.inet_ntop(socket.AF_INET, bnd_host_data)
         elif addr_type == AddressType.IPV6:
+            if len(data) != 16:
+                raise ReplyError(f'LOL WUT?: {data}')
             bnd_host = socket.inet_ntop(socket.AF_INET6, bnd_host_data)
         elif addr_type == AddressType.DOMAIN:  # pragma: no cover
-            # host_len = bnd_host_data[0]
+            host_len = bnd_host_data[0]
+            if len(data) != 7 + host_len:
+                raise ReplyError(f'LOL WUT?: {data}')
             bnd_host = bnd_host_data[1:].decode()
         else:  # pragma: no cover
             raise ReplyError(f'Invalid address type: {addr_type:#02X}')
